@@ -2,6 +2,7 @@ import express from "express";
 import cors, {CorsOptions} from "cors";
 import * as functions from "firebase-functions";
 import {v4 as uuidv4} from "uuid";
+import exampleApi from "./api/exampleApi";
 
 declare global {
   // eslint-disable-next-line @typescript-eslint/no-namespace
@@ -23,5 +24,9 @@ app.use((req, _, next) => {
   next();
 });
 app.use(express.json());
+app.use("/example", exampleApi);
 
-exports.app = functions.region("europe-west3").https.onRequest(app);
+exports.app = functions
+  .region("europe-west3")
+  .runWith({minInstances: 1})
+  .https.onRequest(app);
