@@ -1,5 +1,5 @@
-import {Request} from "express";
 import * as log4js from "log4js";
+import functions from "firebase-functions";
 const isProduction = process.env.NODE_ENV === "production";
 log4js.configure({
   appenders: {
@@ -19,24 +19,4 @@ log4js.configure({
   },
 });
 
-export const logError = (
-  req: Request,
-  logMsg: string,
-  errorMsg: string,
-  errorStack?: string,
-  isFatal = false,
-): void => {
-  logger[isFatal ? "fatal" : "error"](
-    `[${req.requestId}][${logMsg}]: `,
-    errorStack,
-  );
-  logger.info(`[${req.requestId}][${logMsg}]: `, errorMsg);
-  logger.info(`[${req.requestId}][${logMsg}][BODY REQ]: `, {
-    body: req.body,
-    params: req.params,
-    query: req.query,
-    headers: req.headers,
-  });
-};
-
-export const logger = log4js.getLogger("log");
+export const logger = isProduction ? functions.logger : log4js.getLogger("log");
